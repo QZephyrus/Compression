@@ -1,15 +1,13 @@
 #include "Compression.h"
 
-string ptime_to_string(ptime t)
-{
+string ptime_to_string(ptime t) {
   string time;
   time = to_iso_extended_string(t);
   time = time.replace(time.find("T"), 1, " ");
   return time;
 }
 
-double getDist(const point &A, const point &B)
-{
+double getDist(const point &A, const point &B) {
   double dist, x, y;
   x = A.X - B.X;
   y = A.Y - B.Y;
@@ -18,8 +16,7 @@ double getDist(const point &A, const point &B)
 }
 
 // C为中心点
-double getAngle(const point &A, const point &B, const point &C)
-{
+double getAngle(const point &A, const point &B, const point &C) {
   double angle = atan2(A.X - C.X, A.Y - C.Y) - atan2(B.X - C.X, B.Y - C.Y);
   if (angle > M_PI)
     angle -= 2 * M_PI;
@@ -30,15 +27,11 @@ double getAngle(const point &A, const point &B, const point &C)
 }
 
 // C到AB直线的距离
-double getPointToLineDist(const point &A, const point &B, const point &C)
-{
+double getPointToLineDist(const point &A, const point &B, const point &C) {
   double dist;
-  if (A.X == B.X)
-  {
+  if (A.X == B.X) {
     dist = fabs(A.Y - B.Y);
-  }
-  else
-  {
+  } else {
     double k = -((A.Y - B.Y) / (A.X - B.X));
     double b = (A.Y * B.X - B.Y * A.X) / (B.X - A.X);
     dist = fabs(k * C.X + C.Y + b) / sqrt(1 + k * k);
@@ -46,8 +39,8 @@ double getPointToLineDist(const point &A, const point &B, const point &C)
   return dist;
 }
 // 将AB直线分成row段，C到第num个点的距离
-double getPointToLinePDist(const point &A, const point &B, const point &C, int row, int num)
-{
+double getPointToLinePDist(const point &A, const point &B, const point &C,
+                           int row, int num) {
   point temp;
   temp.X = A.X + num * (B.X - A.X) / row;
   temp.Y = A.Y + num * (B.Y - A.Y) / row;
@@ -55,14 +48,12 @@ double getPointToLinePDist(const point &A, const point &B, const point &C, int r
   return dist;
 }
 
-double getVelocity(double dist, double time)
-{
+double getVelocity(double dist, double time) {
   double V;
   V = dist / time;
   return V;
 }
-double getVelocity(const point &A, const point &B)
-{
+double getVelocity(const point &A, const point &B) {
   double dist, V;
   dist = getDist(A, B);
   time_duration time;
@@ -72,8 +63,7 @@ double getVelocity(const point &A, const point &B)
   return V;
 }
 
-point getSimulatPoint(const point &A, const point &B, double time)
-{
+point getSimulatPoint(const point &A, const point &B, double time) {
   double X, Y, S, D, V;
   string Time;
   D = getDist(A, B);
@@ -88,8 +78,7 @@ point getSimulatPoint(const point &A, const point &B, double time)
   point retpoint(X, Y, Time);
   return retpoint;
 }
-point getSimulatPoint2(const point &A, const point &B, double time)
-{
+point getSimulatPoint2(const point &A, const point &B, double time) {
   double X, Y, S, D, V;
   string Time;
   D = getDist(A, B);
@@ -106,41 +95,31 @@ point getSimulatPoint2(const point &A, const point &B, double time)
 }
 
 vector<point> Compression(const vector<point> &trace, double distance,
-                          double angle, double time)
-{
+                          double angle, double time) {
   vector<point> retrace;
   int flag = 0;
   point pt1;
   point pt2;
   point pt3;
   double dist, ang;
-  for (auto &t : trace)
-  {
-    if (flag == 0)
-    {
+  for (auto &t : trace) {
+    if (flag == 0) {
       pt1 = t;
       retrace.push_back(t);
       flag++;
-    }
-    else if (flag == 1)
-    {
+    } else if (flag == 1) {
       pt2 = t;
       retrace.push_back(t);
       flag++;
-    }
-    else
-    {
+    } else {
       pt3 = getSimulatPoint(pt1, pt2, time);
       dist = getDist(t, pt3);
       ang = getAngle(pt3, t, pt2);
       pt1 = pt2;
-      if (dist > distance || ang > angle)
-      {
+      if (dist > distance || ang > angle) {
         retrace.push_back(t);
         pt2 = t;
-      }
-      else
-      {
+      } else {
         pt2 = pt3;
       }
     }
@@ -150,45 +129,33 @@ vector<point> Compression(const vector<point> &trace, double distance,
 }
 
 vector<point> Compression2(const vector<point> &trace, double distance,
-                           double angle, double time)
-{
+                           double angle, double time) {
   vector<point> retrace;
   point pt1;
   point pt2;
   point pt3;
   double dist, ang;
-  for (unsigned int i = 0; i < trace.size(); i++)
-  {
-    if (i == 0)
-    {
+  for (unsigned int i = 0; i < trace.size(); i++) {
+    if (i == 0) {
       pt1 = trace[0];
       retrace.push_back(pt1);
-    }
-    else if (i == 1)
-    {
+    } else if (i == 1) {
       pt2 = trace[1];
       retrace.push_back(pt2);
-    }
-    else if (i == trace.size() - 1)
-    {
+    } else if (i == trace.size() - 1) {
       retrace.push_back(trace[i]);
-    }
-    else
-    {
+    } else {
       pt3 = getSimulatPoint(pt1, pt2, time);
       dist = getDist(trace[i], pt3);
       ang = getAngle(pt3, trace[i], pt2);
       pt1 = pt2;
-      if (dist > distance || ang > angle)
-      {
+      if (dist > distance || ang > angle) {
         pt1 = trace[i];
         retrace.push_back(trace[i]);
         i++;
         pt2 = trace[i];
         retrace.push_back(trace[i]);
-      }
-      else
-      {
+      } else {
         pt2 = pt3;
       }
     }
@@ -196,42 +163,33 @@ vector<point> Compression2(const vector<point> &trace, double distance,
   return retrace;
 }
 
-vector<point> Compression_OW(const vector<point> &trace, double distance, double time)
-{
+vector<point> Compression_OW(const vector<point> &trace, double distance,
+                             double time) {
   point pt1, pt2, pt3;
   int row = trace.size();
   int n;
   vector<point> retrace;
-  for (int i = 0; i < row; i++)
-  {
-    if (i == 0)
-    {
+  for (int i = 0; i < row; i++) {
+    if (i == 0) {
       pt1 = trace[i];
       retrace.push_back(pt1);
       n = i;
       i++;
-    }
-    else
-    {
+    } else {
       pt2 = trace[i];
       bool flag = true;
-      for (int j = n + 1; j < i; j++)
-      {
+      for (int j = n + 1; j < i; j++) {
         double dist = getPointToLineDist(pt1, pt2, trace[j]);
-        if (dist > distance)
-        {
+        if (dist > distance) {
           flag = false;
           break;
         }
       }
-      if (flag == false)
-      {
+      if (flag == false) {
         retrace.push_back(trace[i - 1]);
         pt1 = trace[i - 1];
         n = i - 1;
-      }
-      else if (i == row - 1)
-      {
+      } else if (i == row - 1) {
         retrace.push_back(trace[i]);
       }
     }
@@ -239,42 +197,34 @@ vector<point> Compression_OW(const vector<point> &trace, double distance, double
   return retrace;
 }
 
-vector<point> Compression_OW_Relat(const vector<point> &trace, double distance, double time)
-{
+vector<point> Compression_OW_Relat(const vector<point> &trace, double distance,
+                                   double time) {
   point pt1, pt2;
   int row = trace.size();
   int n;
   vector<point> retrace;
-  for (int i = 0; i < row; i++)
-  {
-    if (i == 0)
-    {
+  for (int i = 0; i < row; i++) {
+    if (i == 0) {
       pt1 = trace[i];
       retrace.push_back(pt1);
       n = i;
       i++;
-    }
-    else
-    {
+    } else {
       pt2 = trace[i];
       bool flag = true;
-      for (int j = n + 1; j < i; j++)
-      {
+      for (int j = n + 1; j < i; j++) {
         double dist = getPointToLinePDist(pt1, pt2, trace[j], i - n, j - n);
-        if (dist > distance)
-        {
+        if (dist > distance) {
           flag = false;
           break;
         }
       }
-      if (flag == false)
-      {
+      if (flag == false) {
         retrace.push_back(trace[i - 1]);
         pt1 = trace[i - 1];
         n = i - 1;
       }
-      else if (i == row - 1)
-      {
+      if (i == row - 1) {
         retrace.push_back(trace[i]);
       }
     }
@@ -282,8 +232,7 @@ vector<point> Compression_OW_Relat(const vector<point> &trace, double distance, 
   return retrace;
 }
 
-int getPointNum(const point &A, const point &B, double time)
-{
+int getPointNum(const point &A, const point &B, double time) {
   ptime t1 = time_from_string(A.time);
   ptime t2 = time_from_string(B.time);
   time_duration td = t2 - t1;
@@ -291,32 +240,24 @@ int getPointNum(const point &A, const point &B, double time)
   return num;
 }
 
-vector<point> Restore(const vector<point> &trace, double time)
-{
+vector<point> Restore(const vector<point> &trace, double time) {
   vector<point> retrace;
   int flag = 0;
   int num;
   point pt1, pt2, pt3, pt4;
-  for (auto &t : trace)
-  {
-    if (flag == 0)
-    {
+  for (auto &t : trace) {
+    if (flag == 0) {
       pt1 = t;
       retrace.push_back(t);
       flag++;
-    }
-    else if (flag == 1)
-    {
+    } else if (flag == 1) {
       pt2 = t;
       retrace.push_back(t);
       flag++;
-    }
-    else
-    {
+    } else {
       pt3 = t;
       num = getPointNum(pt2, pt3, time);
-      for (int i = 1; i < num; i++)
-      {
+      for (int i = 1; i < num; i++) {
         pt4 = getSimulatPoint(pt1, pt2, time);
         retrace.push_back(pt4);
         pt1 = pt2;
@@ -330,26 +271,20 @@ vector<point> Restore(const vector<point> &trace, double time)
   return retrace;
 }
 
-vector<point> Restore3(const vector<point> &trace, double time)
-{
+vector<point> Restore3(const vector<point> &trace, double time) {
   vector<point> retrace;
   int num;
   point pt1, pt2, pt3;
-  for (unsigned int i = 0; i < trace.size(); i++)
-  {
-    if (i == trace.size() - 1)
-    {
+  for (unsigned int i = 0; i < trace.size(); i++) {
+    if (i == trace.size() - 1) {
       retrace.push_back(trace[i]);
-    }
-    else
-    {
+    } else {
       pt1 = trace[i];
       retrace.push_back(trace[i]);
       i++;
       pt2 = trace[i];
       num = getPointNum(pt1, pt2, time);
-      for (int j = 0; j < num; j++)
-      {
+      for (int j = 0; j < num; j++) {
         pt3 = getSimulatPoint2(pt1, pt2, time);
         retrace.push_back(pt3);
         pt1 = pt3;
@@ -360,24 +295,18 @@ vector<point> Restore3(const vector<point> &trace, double time)
   return retrace;
 }
 
-vector<point> Restore_OW(const vector<point> &trace, double time)
-{
+vector<point> Restore_OW(const vector<point> &trace, double time) {
   vector<point> retrace;
   int num;
   point pt1, pt2, pt3;
-  for (unsigned int i = 0; i < trace.size(); i++)
-  {
-    if (i == 0)
-    {
+  for (unsigned int i = 0; i < trace.size(); i++) {
+    if (i == 0) {
       pt1 = trace[i];
       retrace.push_back(pt1);
-    }
-    else
-    {
+    } else {
       pt2 = trace[i];
       num = getPointNum(pt1, pt2, time);
-      for (int j = 1; j < num; j++)
-      {
+      for (int j = 1; j < num; j++) {
         pt3 = getSimulatPoint2(pt1, pt2, time);
         retrace.push_back(pt3);
         pt1 = pt3;
@@ -390,15 +319,13 @@ vector<point> Restore_OW(const vector<point> &trace, double time)
 }
 
 void creatTraces(point &A, int num, double XF, double YF, double time,
-                 vector<point> &ret)
-{
+                 vector<point> &ret) {
   mt19937 gen;
   uniform_real_distribution<double> dist(-5.0, 5.0);
   variate_generator<mt19937 &, uniform_real_distribution<double>> die(gen,
                                                                       dist);
   time_duration t = seconds(time);
-  for (int i = 0; i < num; i++)
-  {
+  for (int i = 0; i < num; i++) {
     A.X = A.X + XF + die();
     A.Y = A.Y + YF + die();
     A.time = ptime_to_string(time_from_string(A.time) + t);
@@ -407,18 +334,45 @@ void creatTraces(point &A, int num, double XF, double YF, double time,
 }
 
 void creatTraces2(point &A, int num, double XF, double YF, double time,
-                  vector<point> &ret)
-{
+                  vector<point> &ret) {
   mt19937 gen;
   uniform_real_distribution<double> dist(-15.0, 15.0);
   variate_generator<mt19937 &, uniform_real_distribution<double>> die(gen,
                                                                       dist);
   time_duration t = seconds(time);
-  for (int i = 0; i < num; i++)
-  {
+  for (int i = 0; i < num; i++) {
     A.X = A.X + XF + die();
     A.Y = A.Y + YF + die();
     A.time = ptime_to_string(time_from_string(A.time) + t);
     ret.push_back(A);
+  }
+}
+
+void creatCirle(point &O, double R, int num, double time, vector<point> &ret) {
+  point temp;
+  temp.time = O.time;
+  // double angle = 0;
+  double per = 360 / num;
+  double angle;
+  mt19937 gen;
+  uniform_real_distribution<double> dist(-5.0, 5.0);
+  variate_generator<mt19937 &, uniform_real_distribution<double>> die(gen,
+                                                                      dist);
+  time_duration t = seconds(time);
+  for (int i = 0; i < num; i++) {
+    angle = per * i;
+    if (angle > 180) {
+      angle = angle - 180;
+      temp.X = -(O.X + R * cos(M_PI * angle / 180) + die());
+      temp.Y = -(O.Y + R * sin(M_PI * angle / 180) + die());
+      temp.time = ptime_to_string(time_from_string(temp.time) + t);
+      ret.push_back(temp);
+    } else {
+      temp.X = O.X + R * cos(M_PI * angle / 180) + die();
+      temp.Y = O.Y + R * sin(M_PI * angle / 180) + die();
+      // cout << per * i << endl;
+      temp.time = ptime_to_string(time_from_string(temp.time) + t);
+      ret.push_back(temp);
+    }
   }
 }
