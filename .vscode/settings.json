@@ -3,6 +3,9 @@
         "iostream": "cpp",
         "ostream": "cpp",
         "cmath": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "array": "cpp",
+        "chrono": "cpp",
+        "algorithm": "cpp"
     }
 }

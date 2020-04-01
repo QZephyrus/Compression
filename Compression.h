@@ -30,6 +30,26 @@ public:
   };
 };
 
+class CountData {
+public:
+  int OrgN;
+  int ComN;
+  int ResN;
+  double CR;
+  double SP;
+  double ReSR;
+  double CS;
+  time_duration ComTime;
+  time_duration ReSTime;
+  double AverDist;
+  double Variance;
+  CountData(double C, double S, double R, double A, double V)
+      : CR(C), SP(S), ReSR(R), AverDist(A), Variance(V){};
+  CountData()
+      : OrgN(0), ComN(0), ResN(0), CR(0), SP(0), ReSR(0), AverDist(0),
+        Variance(0){};
+};
+
 string ptime_to_string(ptime t);
 
 double getDist(const point &A, const point &B);

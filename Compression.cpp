@@ -336,7 +336,7 @@ void creatTraces(point &A, int num, double XF, double YF, double time,
 void creatTraces2(point &A, int num, double XF, double YF, double time,
                   vector<point> &ret) {
   mt19937 gen;
-  uniform_real_distribution<double> dist(-15.0, 15.0);
+  uniform_real_distribution<double> dist(-8.0, 8.0);
   variate_generator<mt19937 &, uniform_real_distribution<double>> die(gen,
                                                                       dist);
   time_duration t = seconds(time);
