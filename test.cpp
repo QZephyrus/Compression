@@ -4,6 +4,7 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 using namespace boost::posix_time;
+using namespace boost;
 namespace plt = matplotlibcpp;
 
 vector<point> creatTrace() {
@@ -138,6 +139,71 @@ vector<point> creatCirles7() {
   creatCirle(begin, 200, 120, 2, ret);
   return ret;
 }
+vector<point> creatTracenum(int total) {
+  mt19937 gen;
+  uniform_real_distribution<double> off(-80.0, 80.0);
+  uniform_int<> n(1, 50);
+  variate_generator<mt19937 &, uniform_real_distribution<double>> away(gen,
+                                                                       off);
+  variate_generator<mt19937 &, uniform_int<>> nu(gen, n);
+  point begin(0, 0, "2020-03-20 15:30:00");
+  vector<point> ret;
+  int num = 0;
+  while (total > 0) {
+    num = nu();
+    if (num > total) {
+      num = total;
+    }
+    creatTraces(begin, num, away(), away(), 2, ret);
+    total -= num;
+  }
+  return ret;
+}
+vector<point> creatTrace8() {
+  vector<point> ret = creatTracenum(1000);
+  return ret;
+}
+vector<point> creatTrace9() {
+  vector<point> ret = creatTracenum(5000);
+  return ret;
+}
+vector<point> creatTrace10() {
+  vector<point> ret = creatTracenum(10000);
+  return ret;
+}
+vector<point> creatTrace11() {
+  vector<point> ret = creatTracenum(50000);
+  return ret;
+}
+vector<point> creatTrace12() {
+  vector<point> ret = creatTracenum(100000);
+  return ret;
+}
+vector<point> creatTrace13() {
+  vector<point> ret = creatTracenum(500000);
+  return ret;
+}
+vector<point> creatTrace14() {
+  int total = 1000;
+  vector<point> ret;
+  mt19937 gen;
+  uniform_real_distribution<double> off(-80.0, 80.0);
+  uniform_int<> n(1, 50);
+  variate_generator<mt19937 &, uniform_real_distribution<double>> away(gen,
+                                                                       off);
+  variate_generator<mt19937 &, uniform_int<>> nu(gen, n);
+  point begin(0, 0, "2020-03-20 15:30:00");
+  int num = 0;
+  while (total > 0) {
+    num = nu();
+    if (num > total) {
+      num = total;
+    }
+    creatTraces(begin, num, away(), away(), 2, ret);
+    total -= num;
+  }
+  return ret;
+}
 
 void inserXY(const vector<point> &trace, vector<double> &X, vector<double> &Y) {
   X.clear();
@@ -208,8 +274,8 @@ int main() {
   }
   */
   vector<point> trace, comtrace, restrace;
-  // trace = creatTrace6();
-  trace = creatCirles7();
+  trace = creatTrace13();
+  // trace = creatCirles7();
   CountData data;
   ptime tick, now;
   tick = microsec_clock::local_time();
@@ -240,10 +306,10 @@ int main() {
   inserXY(comtrace, X, Y);
   plt::named_plot("Compression", X, Y);
   inserXY(restrace, X, Y);
-  plt::named_plot("Restore", X, Y);
-  plt::title("test7");
+  plt::named_plot("Restore", X, Y, "r--");
+  plt::title("test13");
   plt::legend();
-  string filename = "./test7.png";
+  string filename = "./test13.png";
   plt::save(filename);
   cout << "Saving result to " << filename << endl;
   return 0;

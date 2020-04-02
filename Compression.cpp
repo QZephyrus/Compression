@@ -93,6 +93,21 @@ point getSimulatPoint2(const point &A, const point &B, double time) {
   point retpoint(X, Y, Time);
   return retpoint;
 }
+point getSimulatPoint2_floor(const point &A, const point &B, double time) {
+  double X, Y, S, D, V;
+  string Time;
+  D = getDist(A, B);
+  V = getVelocity(A, B);
+  S = V * time;
+  X = A.X + (S * (B.X - A.X)) / D;
+  Y = A.Y + (S * (B.Y - A.Y)) / D;
+  time_duration t = seconds(time);
+  ptime ti = time_from_string(A.time);
+  ti = ti + t;
+  Time = ptime_to_string(ti);
+  point retpoint(X, Y, Time, A.floor);
+  return retpoint;
+}
 
 vector<point> Compression(const vector<point> &trace, double distance,
                           double angle, double time) {
@@ -231,6 +246,48 @@ vector<point> Compression_OW_Relat(const vector<point> &trace, double distance,
   }
   return retrace;
 }
+vector<point> Compression_OW_Relat_floor(const vector<point> &trace,
+                                         double distance, double time) {
+  point pt1, pt2;
+  int row = trace.size();
+  int n;
+  vector<point> retrace;
+  for (int i = 0; i < row; i++) {
+    if (i == 0) {
+      pt1 = trace[i];
+      retrace.push_back(pt1);
+      n = i;
+      i++;
+    } else {
+      pt2 = trace[i];
+      bool flag = true;
+      if (pt2.floor == pt1.floor) {
+        for (int j = n + 1; j < i; j++) {
+          double dist = getPointToLinePDist(pt1, pt2, trace[j], i - n, j - n);
+          if (dist > distance) {
+            flag = false;
+            break;
+          }
+          if (flag == false) {
+            retrace.push_back(trace[i - 1]);
+            pt1 = trace[i - 1];
+            n = i - 1;
+          }
+          if (i == row - 1) {
+            retrace.push_back(trace[i]);
+          }
+        }
+      } else {
+        retrace.push_back(trace[i - 1]);
+        retrace.push_back(trace[i]);
+        pt1 = trace[i];
+        n = i;
+        i++;
+      }
+    }
+  }
+  return retrace;
+}
 
 int getPointNum(const point &A, const point &B, double time) {
   ptime t1 = time_from_string(A.time);
@@ -308,6 +365,28 @@ vector<point> Restore_OW(const vector<point> &trace, double time) {
       num = getPointNum(pt1, pt2, time);
       for (int j = 1; j < num; j++) {
         pt3 = getSimulatPoint2(pt1, pt2, time);
+        retrace.push_back(pt3);
+        pt1 = pt3;
+      }
+      retrace.push_back(pt2);
+      pt1 = pt2;
+    }
+  }
+  return retrace;
+}
+vector<point> Restore_OW_floor(const vector<point> &trace, double time) {
+  vector<point> retrace;
+  int num;
+  point pt1, pt2, pt3;
+  for (unsigned int i = 0; i < trace.size(); i++) {
+    if (i == 0) {
+      pt1 = trace[i];
+      retrace.push_back(pt1);
+    } else {
+      pt2 = trace[i];
+      num = getPointNum(pt1, pt2, time);
+      for (int j = 1; j < num; j++) {
+        pt3 = getSimulatPoint2_floor(pt1, pt2, time);
         retrace.push_back(pt3);
         pt1 = pt3;
       }
