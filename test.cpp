@@ -183,7 +183,30 @@ vector<point> creatTrace13() {
   vector<point> ret = creatTracenum(500000);
   return ret;
 }
-vector<point> creatTrace14() {
+vector<point> creatTrace14_floor() {
+  point begin(0, 0, "2020-03-20 15:30:00", 1);
+  vector<point> ret;
+  creatTraces(begin, 7, 0, -50, 2, ret);
+  creatTraces(begin, 6, 0, -20, 2, ret);
+  creatTraces(begin, 24, -50, 0, 2, ret);
+  begin.floor = 2;
+  creatTraces(begin, 6, 7, -10, 2, ret);
+  creatTraces(begin, 15, 0, -50, 2, ret);
+  creatTraces(begin, 6, 5, -10, 2, ret);
+  creatTraces(begin, 17, 100, 0, 2, ret);
+  creatTraces(begin, 5, 20, 2, 2, ret);
+  creatTraces(begin, 14, 0, 50, 2, ret);
+  begin.floor = 3;
+  creatTraces(begin, 5, -100, 0, 2, ret);
+  creatTraces(begin, 14, 0, -50, 2, ret);
+  creatTraces(begin, 4, -100, 0, 2, ret);
+  begin.floor = 1;
+  creatTraces(begin, 14, 0, 50, 2, ret);
+  creatTraces(begin, 4, -100, 0, 2, ret);
+  creatTraces(begin, 14, 0, -50, 2, ret);
+  return ret;
+}
+vector<point> creatTrace15() {
   int total = 1000;
   vector<point> ret;
   mt19937 gen;
@@ -274,16 +297,19 @@ int main() {
   }
   */
   vector<point> trace, comtrace, restrace;
-  trace = creatTrace13();
+  // trace = creatTrace6();
+  trace = creatTrace14_floor();
   // trace = creatCirles7();
   CountData data;
   ptime tick, now;
   tick = microsec_clock::local_time();
-  comtrace = Compression_OW_Relat(trace, 10, 2);
+  // comtrace = Compression_OW_Relat(trace, 10, 2);
+  comtrace = Compression_OW_Relat_floor(trace, 10, 2);
   now = microsec_clock::local_time();
   data.ComTime = now - tick;
   tick = microsec_clock::local_time();
-  restrace = Restore_OW(comtrace, 2);
+  // restrace = Restore_OW(comtrace, 2);
+  restrace = Restore_OW_floor(comtrace, 2);
   now = microsec_clock::local_time();
   data.ReSTime = now - tick;
   statistics(trace, comtrace, restrace, data);
@@ -299,6 +325,19 @@ int main() {
   cout << "Compression use time(us):" << data.ComTime.total_microseconds()
        << endl;
   cout << "Restore use time(us):" << data.ReSTime.total_microseconds() << endl;
+  cout << "Orgin traces" << endl;
+  for (auto &v : trace) {
+    cout << v.X << "," << v.Y << "," << v.floor << endl;
+  }
+  cout << "Compression traces" << endl;
+  for (auto &v : comtrace) {
+    cout << v.X << "," << v.Y << "," << v.floor << endl;
+  }
+  cout << "Restore traces" << endl;
+  for (auto &v : restrace) {
+    cout << v.X << "," << v.Y << "," << v.floor << endl;
+  }
+  /*
   plt::figure_size(2400, 1560);
   vector<double> X, Y;
   inserXY(trace, X, Y);
@@ -312,5 +351,6 @@ int main() {
   string filename = "./test13.png";
   plt::save(filename);
   cout << "Saving result to " << filename << endl;
+  */
   return 0;
 }

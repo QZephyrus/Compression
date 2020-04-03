@@ -223,7 +223,6 @@ vector<point> Compression_OW_Relat(const vector<point> &trace, double distance,
       pt1 = trace[i];
       retrace.push_back(pt1);
       n = i;
-      i++;
     } else {
       pt2 = trace[i];
       bool flag = true;
@@ -254,35 +253,37 @@ vector<point> Compression_OW_Relat_floor(const vector<point> &trace,
   vector<point> retrace;
   for (int i = 0; i < row; i++) {
     if (i == 0) {
+      retrace.push_back(trace[i]);
       pt1 = trace[i];
-      retrace.push_back(pt1);
       n = i;
-      i++;
     } else {
       pt2 = trace[i];
-      bool flag = true;
       if (pt2.floor == pt1.floor) {
+        bool flag = true;
         for (int j = n + 1; j < i; j++) {
           double dist = getPointToLinePDist(pt1, pt2, trace[j], i - n, j - n);
           if (dist > distance) {
             flag = false;
             break;
           }
-          if (flag == false) {
-            retrace.push_back(trace[i - 1]);
-            pt1 = trace[i - 1];
-            n = i - 1;
-          }
-          if (i == row - 1) {
-            retrace.push_back(trace[i]);
-          }
+        }
+        if (flag == false) {
+          retrace.push_back(trace[i - 1]);
+          pt1 = trace[i - 1];
+          n = i - 1;
+        }
+        if (i == row - 1) {
+          retrace.push_back(trace[i]);
         }
       } else {
-        retrace.push_back(trace[i - 1]);
-        retrace.push_back(trace[i]);
         pt1 = trace[i];
+        if (n == i - 1) {
+          retrace.push_back(pt1);
+        } else {
+          retrace.push_back(trace[i - 1]);
+          retrace.push_back(trace[i]);
+        }
         n = i;
-        i++;
       }
     }
   }
